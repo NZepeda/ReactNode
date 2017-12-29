@@ -3,6 +3,8 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const keys = require('../config/keys');
 
+
+// Mongo Model
 const User = mongoose.model('Users'); 
 
 passport.serializeUser((user, done) => {
@@ -21,18 +23,16 @@ passport.use(new GoogleStrategy({
     clientSecret: keys.googleClientSecret,
     callbackURL: '/auth/google/callback',
     proxy: true
-}, (accessToken, refreshToken, profile, done) => {
-    User.findOne({googleId: profile.id}).then((existingUser) => {
-        if(existingUser){
-            // User already exists
-            done(null, existingUser);
-        }
-        else{
-
-            // Create the user 
-            new User({clientId: profile.id}).save().then((user)  => {
-                done(null, user);
-            });
-        }
-    })
+}, 
+async (accessToken, refreshToken, profile, done) => {
+    const existingUser = await User.findOne({googleId: profile.id})
+   
+    if(existingUser){
+        // User already exists
+        return done(null, existingUser);
+    }
+    
+    // Create the user 
+    const user = await new User({clientId: profile.id}).save();
+    done(null, user);
 }));
