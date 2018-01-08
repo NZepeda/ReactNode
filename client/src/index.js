@@ -5,6 +5,9 @@ import reducers from './reducers';
 import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
 
+// Import Materialize CSS
+import 'materialize-css/dist/css/materialize.min.css';
+
 const store = createStore(reducers, {}, applyMiddleware());
 
 ReactDOM.render(
