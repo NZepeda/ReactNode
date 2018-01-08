@@ -19,6 +19,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 require('./routes/authRoutes')(app);
+
 // Mongoose connection
 mongoose.connect(keys.dbHost,{useMongoClient: true});
 

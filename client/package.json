@@ -5,12 +5,18 @@
   "proxy": {
     "/auth/google": {
       "target": "http://localhost:8000"
+    },
+    "/api/*": {
+      "target": "http://localhost:8000"
     }
   },
   "dependencies": {
+    "axios": "^0.17.1",
     "materialize-css": "^0.100.2",
     "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "react-stripe-checkout": "^2.6.3",
+    "redux-thunk": "^2.2.0"
   },
   "devDependencies": {
     "react-scripts": "1.0.17"

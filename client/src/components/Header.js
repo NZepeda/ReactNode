@@ -1,18 +1,51 @@
 import React, {Component} from 'react'
+import {connect} from 'react-redux';
+import {Link} from 'react-router-dom';
 
 class Header extends Component {
+
+    logoRedirect() {
+        switch(this.props.auth){
+            // user is not logged in
+            case null || false:
+                return '/';
+            // if user is logged in, redirect to dashboard
+            default: 
+                return '/surveys';
+        }
+    }
+    renderContent(){
+        switch(this.props.auth){
+            case null:
+                return;
+            case false:
+                return(
+                    <li><a href="/auth/google">Login with Google</a></li>
+                );
+            default:
+                return <li><a href="/api/logout">Log Out</a></li>;
+        }
+    }
+
     render(){
+        console.log(this.props);
         return (
             <nav>
                 <div className="nav-wrapper">
-                <a href="#" className="brand-logo">Emaily</a>
-                <ul id="nav-mobile" className="right">
-                    <li><a>Login with Google</a></li>
-                </ul>
+                    <Link className="left brand-logo" to={this.logoRedirect()}>
+                        Emaily
+                    </Link>
+                    <ul id="nav-mobile" className="right">
+                        {this.renderContent()}
+                    </ul>
                 </div>
           </nav>
         )
     }
 }
 
-export default Header;
+function mapStateToProps(state){
+    return {auth:state.auth}
+}
+
+export default connect(mapStateToProps)(Header);
