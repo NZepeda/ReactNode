@@ -1,7 +1,6 @@
 require('dotenv').config();
 const stripe = require('stripe')(process.env.stripeSecretKey);
 const bodyParser = require('body-parser');
-const passport = require('passport');
 const requireLogin = require('../middlewares/requireLogin');
 
 module.exports = app => {
