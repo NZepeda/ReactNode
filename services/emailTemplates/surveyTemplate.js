@@ -11,7 +11,7 @@ module.exports = (survey) => {
                         <a href="${process.env.redirectDomain}">Yes</a>
                     </div>
                     <div>
-                        <a href="${preocess.env.redirectDomain}">No</a>
+                        <a href="${process.env.redirectDomain}">No</a>
                     </div>
                 </div>
             </body>

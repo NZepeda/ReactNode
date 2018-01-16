@@ -1,7 +1,7 @@
 {
   "name": "reactnode",
   "version": "0.0.1",
-  "description": "First mern app",
+  "description": "React Node App",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

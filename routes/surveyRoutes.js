@@ -1,3 +1,4 @@
+
 const requireLogin = require('../middlewares/requireLogin');
 const mongoose = require('mongoose');
 
@@ -12,6 +13,7 @@ module.exports = (app) => {
     });
 
     app.post('/api/surveys', requireLogin, async (req, res) => {
+        console.log(req.body);
         if(req.user.credits < 1){
             return res.status(403).status({error: 'Not enough credits'});
         }
@@ -28,18 +30,19 @@ module.exports = (app) => {
             dateSent: Date.now()
         });
 
-        const mailer  = new Mailer(survey, surveyTemplate(survey));
-
         try{
+            const mailer  = new Mailer(survey, surveyTemplate(survey));
             await mailer.send();
             await survey.save();
     
             req.user.credits -= 1;
     
             const user = await req.user.save();
-    
+            console.log('User: ');
+            console.log(user);
             res.send(user);
         }catch(err){
+            console.log(err);
             res.status(422).send(err);
         }
 
