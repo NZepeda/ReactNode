@@ -10,26 +10,35 @@ const {URL} = require('url');
 
 module.exports = (app) => {
 
-    app.get('/api/surveys/feedback', (req, res)=> {
+    app.get('/api/surveys/:surveyId/:choice', (req, res)=> {
         res.send('Thanks for giving your feedback!');
     });
 
     app.post('/api/surveys/webhooks', (req, res) => {
         
         const p = new Path('/api/surveys/:surveyId/:choice');
-        const events = _.map(req.body, (event) => {
-            const pathname = new URL(event.url).pathname;
-            const match = p.test(pathname);
 
-            if(match){
-                return {email: event.email, surveyId: match.surveyId, choice: match.choice}
-            }
-        });
+       _.chain(req.body)
+        .map(({email, url}) => {
+            const match = p.test(new URL(url).pathname);
 
-        const compactEvents = _.compact(events);
-        const uniqueEvents = _.uniqBy(compactEvents, 'email', 'surveyId');
-
-        console.log(uniqueEvents);
+            if(match){ return { email, surveyId: match.surveyId, choice: match.choice}; }
+        })
+        .compact()
+        .uniqBy('email', 'surveyId')
+        .each( ({email, choice, surveyId}) => {
+            Survey.updateOne({
+                _id: surveyId,
+                recipients: {
+                    $elemMatch: {email: email, responded: false}
+                }
+            }, {
+                $inc: {[choice]: 1}, // increase the amount of votes for either yes or no
+                $set: { 'recipients.$.responded': true }, // $ holds an a reference to the index of the document that is being modified
+                lastResponded: new Date()
+            }).exec();
+        })
+        .value();
 
         res.status(200).send({});
 
@@ -69,5 +78,12 @@ module.exports = (app) => {
             res.status(422).send(err);
         }
 
+    });
+
+    app.get('/api/surveys', requireLogin, async (req, res) => {
+        const surveys = await Survey.find({_user: req.user.id})
+            .select();
+
+        res.send(surveys);
     });
 }
